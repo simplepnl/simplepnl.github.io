@@ -1,0 +1,163 @@
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<style type="text/css">
+.header {
+	font-size: 2em;
+	font-weight: 600;
+	line-height: 1.4;
+	margin: 0.67em 0;
+	color: #343434;
+	text-align: center;
+	font-family: Comic Sans MS, cursive;
+}
+
+.result {
+	font-size: 1.5em;
+	font-weight: 500;
+	line-height: 1.4;
+	margin: 0.67em 0;
+	color: #343434;
+	font-family: Comic Sans MS, cursive;
+}
+
+.hr {
+	border-top: 2px solid #343434;
+	margin: 20px 0;
+}
+label, input, select, button{
+	height : 40px;
+	width:240px;
+	display:inline-block;
+	font-size: 1.2em;
+	font-weight: 500;
+	line-height: 1.5;
+	margin: 0.67em 0;
+	color: #343434;
+	text-align: left;
+	font-family: Comic Sans MS, cursive;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+	
+}
+footer {
+	padding-bottom : 10px;
+	position: relative;
+	text-align: center;
+}
+
+</style>
+<title>Simple PnL Calculator</title>
+</head>
+<body>
+<div class="header">Simple PnL Calculator</div>
+<div class="hr"></div>
+<form method="POST" action="">
+	<div>
+	<label for="select">Position direction : </label>
+	<select  name="select" id="select">
+	<option selected="selected" name="long">Long</option>
+	<option name="short">Short</option>
+	</select>
+	</div>
+
+	<div>
+	<label for="pos_size">Position size (In units*) : </label>
+	<input  type="text" placeholder="Position size" name="pos_size" id="pos_size" maxlength="16" autocomplete="off" required>
+	</div>
+
+	<div>
+	<label for="pos_entry">Position average price : </label>
+	<input  type="text" placeholder="Position average price" name="pos_entry" id="pos_entry" maxlength="16" autocomplete="off" required>
+	</div>
+
+	<div>
+	<label for="target_price">Target price : </label>
+	<input  type="text" placeholder="Target price" name="target_price" id="target_price" maxlength="16" autocomplete="off" required>
+	</div>
+	  
+	<div>
+	<button type="submit" name="submit" style="text-align:center;">Calculate</button>
+	</div>
+    
+      <div class="result" id="result" hidden="">
+      The PnL for this trade is : 
+      </div>
+  
+  </div>
+
+<div>
+<div class="hr"></div>
+<p style="font-family:-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;">
+<i>*For Cryptocurrencies Traders:</i><br>
+Number of units = Number of coins (Example : 0.001 BTC, 2.3 ETH, 69420 DOGE etc...)<br><br>
+
+<i>*For Forex traders : </i><br>
+
+1 Micro lot = 1000 units / 1 Standard lot = 100 000 units etc...<br><br>
+
+<i>*For CFDs : </i><br>
+Please check your broker to get the size the contract as it depends on the contract and your broker.
+
+</p>
+</div>
+
+</form>
+<div class="hr"></div>
+<footer style="font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;font-size: 1rem;font-weight: 400;">
+Built with love by your fellow trader © 2023
+</footer>
+</body>
+<script>
+// Get references to the form and the result div
+const form = document.querySelector('form');
+const resultDiv = document.querySelector('#result');
+
+// Add an event listener to the form submit event
+form.addEventListener('submit', (event) => {
+  event.preventDefault(); // Prevent the form from submitting
+
+  // Get the form field values and replace commas with dots
+  const direction = form.select.value;
+  const posSize = parseFloat(form.pos_size.value.replace(',', '.'));
+  const posEntry = parseFloat(form.pos_entry.value.replace(',', '.'));
+  const targetPrice = parseFloat(form.target_price.value.replace(',', '.'));
+
+  // Calculate the PnL and PnL percentage
+  const pnl = (direction === 'Long') ? (targetPrice - posEntry) * posSize : (posEntry - targetPrice) * posSize;
+  var percentageDiff = (targetPrice - posEntry) / posEntry * 100;
+
+  // Change the color of the result text depending on whether it's positive or negative
+  let pnlColor = '';
+  let percentageDiffColor = '';
+  if (pnl > 0) {
+    pnlColor = 'green';
+	percentageDiffColor = 'green';
+  } else if (pnl < 0) {
+    pnlColor = 'red';
+	percentageDiffColor = 'red';
+  }
+  if(pnl > 0 && direction === 'Long'){
+	  percentageDiff = percentageDiff;
+  }
+  if(pnl > 0 && direction === 'Short'){
+	  percentageDiff = Math.abs(percentageDiff);
+  }
+  if(pnl < 0 && direction === 'Long'){
+	  percentageDiff = percentageDiff;
+  }
+  if(pnl < 0 && direction === 'Short'){
+	  percentageDiff = -percentageDiff;
+  }
+
+  // Display the result in the result div
+  resultDiv.innerHTML = `Your PnL for this trade is : <span style="color: ${pnlColor};">${pnl.toFixed(8)}</span><br> The ROI in percentage is : <span style="color: ${percentageDiffColor};">${percentageDiff.toFixed(8)} %</span>`;
+  resultDiv.removeAttribute('hidden');
+});
+
+</script>
+</html>
